@@ -1,4 +1,11 @@
 {
+  "common": {
+    "login": "Sign In to WorkMate",
+    "register": "Create Account",
+    "submit": "Submit",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
   "nav": {
     "home": "Home",
     "bookings": "Bookings",
