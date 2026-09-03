@@ -1,0 +1,64 @@
+{
+  "cooperatives": [
+    {
+      "name": "Jharkhand State Labour Cooperative Federation",
+      "type": "federation",
+      "state": "Jharkhand",
+      "district": "Ranchi",
+      "publicReference": "JHR-FED-2023",
+      "isDemoData": true
+    },
+    {
+      "name": "Ranchi Shramik Sahakari Samiti",
+      "type": "society",
+      "state": "Jharkhand",
+      "district": "Ranchi",
+      "publicReference": "RAN-SOC-2024",
+      "isDemoData": true
+    },
+    {
+      "name": "Raipur Shramik Cooperative",
+      "type": "society",
+      "state": "Chhattisgarh",
+      "district": "Raipur",
+      "publicReference": "RPR-SOC-2024",
+      "isDemoData": true
+    }
+  ],
+  "workers": [
+    { "name": "Ramesh Kumar", "skill": "electrician", "rating": 4.8, "lat": 23.3441, "lng": 85.3096, "district": "Ranchi", "experience": 8, "jobs": 142 },
+    { "name": "Suresh Singh", "skill": "electrician", "rating": 4.7, "lat": 23.3541, "lng": 85.3196, "district": "Ranchi", "experience": 5, "jobs": 89 },
+    { "name": "Amit Sharma", "skill": "electrician", "rating": 4.5, "lat": 23.3341, "lng": 85.3296, "district": "Ranchi", "experience": 4, "jobs": 56 },
+    { "name": "Vikash Yadav", "skill": "electrician", "rating": 4.2, "lat": 23.3641, "lng": 85.3096, "district": "Ranchi", "experience": 3, "jobs": 34 },
+    { "name": "Raju Das", "skill": "electrician", "rating": 4.6, "lat": 23.3441, "lng": 85.2996, "district": "Ranchi", "experience": 6, "jobs": 110 },
+    { "name": "Mohan Lal", "skill": "plumber", "rating": 4.7, "lat": 23.3441, "lng": 85.3096, "district": "Ranchi", "experience": 7, "jobs": 125 },
+    { "name": "Karan Verma", "skill": "plumber", "rating": 4.8, "lat": 23.3541, "lng": 85.3196, "district": "Ranchi", "experience": 9, "jobs": 190 },
+    { "name": "Deepak Paswan", "skill": "plumber", "rating": 4.3, "lat": 23.3341, "lng": 85.3296, "district": "Ranchi", "experience": 4, "jobs": 48 },
+    { "name": "Anil Munda", "skill": "plumber", "rating": 4.1, "lat": 23.3641, "lng": 85.3096, "district": "Ranchi", "experience": 3, "jobs": 29 },
+    { "name": "Gopal Oraon", "skill": "carpenter", "rating": 4.9, "lat": 23.3441, "lng": 85.2996, "district": "Ranchi", "experience": 11, "jobs": 210 },
+    { "name": "Sunil Mahato", "skill": "carpenter", "rating": 4.4, "lat": 23.3441, "lng": 85.3096, "district": "Ranchi", "experience": 5, "jobs": 67 },
+    { "name": "Vijay Pandey", "skill": "carpenter", "rating": 4.2, "lat": 23.3541, "lng": 85.3196, "district": "Ranchi", "experience": 4, "jobs": 45 },
+    { "name": "Ravi Kumar", "skill": "painter", "rating": 4.6, "lat": 23.3341, "lng": 85.3296, "district": "Ranchi", "experience": 6, "jobs": 98 },
+    { "name": "Prakash Singh", "skill": "painter", "rating": 4.3, "lat": 23.3641, "lng": 85.3096, "district": "Ranchi", "experience": 4, "jobs": 52 },
+    { "name": "Rahul Verma", "skill": "painter", "rating": 4.5, "lat": 23.3441, "lng": 85.2996, "district": "Ranchi", "experience": 5, "jobs": 76 },
+    { "name": "Sita Devi", "skill": "domestic_helper", "rating": 4.9, "lat": 23.3441, "lng": 85.3096, "district": "Ranchi", "experience": 8, "jobs": 178 },
+    { "name": "Geeta Rani", "skill": "domestic_helper", "rating": 4.6, "lat": 23.3541, "lng": 85.3196, "district": "Ranchi", "experience": 5, "jobs": 84 },
+    { "name": "Meena Kumari", "skill": "domestic_helper", "rating": 4.4, "lat": 23.3341, "lng": 85.3296, "district": "Ranchi", "experience": 4, "jobs": 60 },
+    { "name": "Anandi Bai", "skill": "caregiver", "rating": 4.9, "lat": 23.3441, "lng": 85.3096, "district": "Ranchi", "experience": 7, "jobs": 130 },
+    { "name": "Pooja Sharma", "skill": "caregiver", "rating": 4.7, "lat": 23.3541, "lng": 85.3196, "district": "Ranchi", "experience": 5, "jobs": 92 }
+  ],
+  "bookings": [
+    { "service": "electrician", "price": 600, "status": "completed", "desc": "Ceiling fan replacement and wiring check in 2 rooms" },
+    { "service": "plumber", "price": 550, "status": "completed", "desc": "Bathroom pipe leakage and tap replacement" },
+    { "service": "carpenter", "price": 850, "status": "completed", "desc": "Wooden wardrobe hinge fixing and lock installation" },
+    { "service": "painter", "price": 1200, "status": "completed", "desc": "Balcony wall touchup painting and waterproofing" },
+    { "service": "electrician", "price": 700, "status": "rated", "desc": "Main switchboard fuse replacement and earthing check" },
+    { "service": "plumber", "price": 450, "status": "rated", "desc": "Kitchen sink drainage cleaning and trap fitting" },
+    { "service": "domestic_helper", "price": 500, "status": "in_progress", "desc": "Full house deep cleaning after festival" },
+    { "service": "caregiver", "price": 900, "status": "in_progress", "desc": "Elderly patient care and mobility assistance" },
+    { "service": "electrician", "price": 650, "status": "accepted", "desc": "Inverter wiring and battery setup" },
+    { "service": "carpenter", "price": 600, "status": "accepted", "desc": "Door latch and handle fitting" },
+    { "service": "painter", "price": 1500, "status": "requested", "desc": "Living room texture painting" },
+    { "service": "plumber", "price": 400, "status": "cancelled", "desc": "Overhead tank float valve check" }
+  ]
+}

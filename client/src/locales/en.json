@@ -1,0 +1,100 @@
+{
+  "nav": {
+    "home": "Home",
+    "bookings": "Bookings",
+    "profile": "Profile",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register"
+  },
+  "landing": {
+    "hero_title": "Fair Work. Better Services.",
+    "subtitle": "Join a cooperative gig platform that guarantees fair wages and quality service.",
+    "cta_book": "Book a Service",
+    "cta_join": "Join as Worker",
+    "features": "Features",
+    "how_it_works": "How it Works",
+    "stats": "Platform Stats"
+  },
+  "services": {
+    "electrician": "Electrician",
+    "plumber": "Plumber",
+    "carpenter": "Carpenter",
+    "painter": "Painter",
+    "domestic_helper": "Domestic Helper",
+    "caregiver": "Caregiver",
+    "driver": "Driver",
+    "gardener": "Gardener",
+    "cleaner": "Cleaner",
+    "technician": "Technician"
+  },
+  "booking": {
+    "form_labels": "Booking Form",
+    "status_labels": "Status",
+    "create": "Create Booking",
+    "cancel": "Cancel",
+    "emergency": "Emergency Request"
+  },
+  "worker": {
+    "register": "Register as Worker",
+    "profile": "Worker Profile",
+    "skills": "Skills",
+    "availability": "Availability",
+    "earnings": "Earnings",
+    "jobs": "Jobs",
+    "accept": "Accept Job",
+    "reject": "Decline",
+    "complete": "Mark Complete"
+  },
+  "payment": {
+    "pay_now": "Pay Now",
+    "total": "Total Amount",
+    "breakdown": "Payment Breakdown",
+    "worker_share": "Worker Share",
+    "platform_share": "Platform Share",
+    "welfare": "Welfare Contribution",
+    "receipt": "Receipt"
+  },
+  "rating": {
+    "rate_service": "Rate Service",
+    "stars": "Stars",
+    "comment": "Comment",
+    "submit": "Submit Rating"
+  },
+  "grievance": {
+    "raise": "Raise Grievance",
+    "type_labels": "Type",
+    "description": "Description",
+    "evidence": "Evidence",
+    "status": "Status"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "verify": "Verify Workers",
+    "approve": "Approve",
+    "reject": "Reject",
+    "bookings": "All Bookings",
+    "welfare": "Welfare Ledger",
+    "forecast": "Demand Forecast",
+    "grievances": "Grievances"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "no_results": "No results found.",
+    "demo_data": "Using demo data"
+  },
+  "trust": {
+    "verified_workers": "Verified Workers",
+    "fair_wages": "Fair Wages",
+    "cooperative_owned": "Cooperative Owned",
+    "welfare_benefits": "Welfare Benefits"
+  }
+}

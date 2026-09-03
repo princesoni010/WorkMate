@@ -1,0 +1,100 @@
+{
+  "nav": {
+    "home": "होम",
+    "bookings": "बुकिंग",
+    "profile": "प्रोफ़ाइल",
+    "dashboard": "डैशबोर्ड",
+    "logout": "लॉगआउट",
+    "login": "लॉगिन",
+    "register": "रजिस्टर"
+  },
+  "landing": {
+    "hero_title": "उचित काम। बेहतर सेवाएं।",
+    "subtitle": "एक सहकारी गिग प्लेटफॉर्म से जुड़ें जो उचित वेतन और गुणवत्तापूर्ण सेवा की गारंटी देता है।",
+    "cta_book": "सेवा बुक करें",
+    "cta_join": "कार्यकर्ता के रूप में जुड़ें",
+    "features": "विशेषताएं",
+    "how_it_works": "यह कैसे काम करता है",
+    "stats": "प्लेटफ़ॉर्म आंकड़े"
+  },
+  "services": {
+    "electrician": "इलेक्ट्रीशियन",
+    "plumber": "प्लंबर",
+    "carpenter": "बढ़ई",
+    "painter": "पेंटर",
+    "domestic_helper": "घरेलू सहायक",
+    "caregiver": "देखभालकर्ता",
+    "driver": "ड्राइवर",
+    "gardener": "माली",
+    "cleaner": "सफाईकर्मी",
+    "technician": "तकनीशियन"
+  },
+  "booking": {
+    "form_labels": "बुकिंग फॉर्म",
+    "status_labels": "स्थिति",
+    "create": "बुकिंग बनाएं",
+    "cancel": "रद्द करें",
+    "emergency": "आपातकालीन अनुरोध"
+  },
+  "worker": {
+    "register": "कार्यकर्ता के रूप में रजिस्टर करें",
+    "profile": "कार्यकर्ता प्रोफ़ाइल",
+    "skills": "कौशल",
+    "availability": "उपलब्धता",
+    "earnings": "कमाई",
+    "jobs": "नौकरियां",
+    "accept": "नौकरी स्वीकार करें",
+    "reject": "अस्वीकार करें",
+    "complete": "पूरा हुआ चिह्नित करें"
+  },
+  "payment": {
+    "pay_now": "अभी भुगतान करें",
+    "total": "कुल राशि",
+    "breakdown": "भुगतान विवरण",
+    "worker_share": "कार्यकर्ता का हिस्सा",
+    "platform_share": "प्लेटफ़ॉर्म का हिस्सा",
+    "welfare": "कल्याणकारी योगदान",
+    "receipt": "रसीद"
+  },
+  "rating": {
+    "rate_service": "सेवा को रेट करें",
+    "stars": "तारे",
+    "comment": "टिप्पणी",
+    "submit": "रेटिंग सबमिट करें"
+  },
+  "grievance": {
+    "raise": "शिकायत दर्ज करें",
+    "type_labels": "प्रकार",
+    "description": "विवरण",
+    "evidence": "प्रमाण",
+    "status": "स्थिति"
+  },
+  "admin": {
+    "dashboard": "डैशबोर्ड",
+    "verify": "कार्यकर्ताओं को सत्यापित करें",
+    "approve": "मंजूर करें",
+    "reject": "अस्वीकार करें",
+    "bookings": "सभी बुकिंग",
+    "welfare": "कल्याण खाता",
+    "forecast": "मांग पूर्वानुमान",
+    "grievances": "शिकायतें"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "एक त्रुटि हुई",
+    "success": "सफलता!",
+    "save": "परिवर्तन सहेजें",
+    "cancel": "रद्द करें",
+    "submit": "जमा करें",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "no_results": "कोई परिणाम नहीं मिला।",
+    "demo_data": "डेमो डेटा का उपयोग कर रहे हैं"
+  },
+  "trust": {
+    "verified_workers": "सत्यापित कार्यकर्ता",
+    "fair_wages": "उचित वेतन",
+    "cooperative_owned": "सहकारी स्वामित्व",
+    "welfare_benefits": "कल्याणकारी लाभ"
+  }
+}
