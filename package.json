@@ -1,0 +1,13 @@
+{
+  "name": "workmate-platform",
+  "version": "1.0.0",
+  "description": "WorkMate Cooperative Gig Services Platform - SIH 2026",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix client install && npm --prefix client run build",
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server run dev",
+    "start": "npm --prefix server start",
+    "seed": "npm --prefix server run seed"
+  }
+}
