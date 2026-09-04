@@ -10,7 +10,7 @@ const Home = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { location, detecting, autoDetectLocation, resetToRanchi } = useLocationState();
+  const { location, detecting, autoDetectLocation, setCity, resetToRanchi } = useLocationState();
   
   const [recentBookings, setRecentBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
@@ -54,13 +54,20 @@ const Home = () => {
 
         <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl">
           <span className="text-sm">📍</span>
-          <span className="text-xs font-bold text-blue-900">{location.name}</span>
+          <select
+            value={location.city}
+            onChange={(e) => setCity(e.target.value)}
+            className="bg-transparent text-xs font-bold text-blue-900 border-none outline-none cursor-pointer"
+          >
+            <option value="Ranchi">Ranchi (Active Pilot)</option>
+            <option value="Raipur">Raipur (Out of Area)</option>
+          </select>
           <button
             onClick={() => autoDetectLocation()}
             disabled={detecting}
-            className="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded shadow-xs border border-blue-200"
+            className="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded shadow-xs border border-blue-200 ml-1"
           >
-            {detecting ? 'Locating...' : '🎯 Auto-Pick'}
+            {detecting ? '...' : '🎯 GPS'}
           </button>
         </div>
       </div>

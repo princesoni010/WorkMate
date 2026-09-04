@@ -19,7 +19,7 @@ const Search = () => {
   const [searchParams] = useSearchParams();
   const initialService = searchParams.get('service') || '';
 
-  const { location, detecting, autoDetectLocation, resetToRanchi } = useLocationState();
+  const { location, detecting, autoDetectLocation, setCity, resetToRanchi } = useLocationState();
 
   const [selectedService, setSelectedService] = useState(initialService);
   const [selectedRating, setSelectedRating] = useState('any');
@@ -36,7 +36,7 @@ const Search = () => {
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
-      // If user's global location is outside Ranchi (e.g. Raipur), return 0 workers for that area
+      // If user's global location is outside Ranchi (e.g. Raipur), strictly return 0 workers for that area
       if (location.isOutsideRanchi) {
         setWorkers([]);
       } else {
@@ -50,29 +50,36 @@ const Search = () => {
         setWorkers(list);
       }
       setLoading(false);
-    }, 250);
+    }, 150);
 
     return () => clearTimeout(timer);
-  }, [selectedService, selectedRating, location]);
+  }, [selectedService, selectedRating, location.isOutsideRanchi, location.name]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      {/* Search Header & Location Bar */}
+      {/* Search Header & City Picker Bar */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Find Verified Cooperative Workers</h1>
-          <p className="text-xs text-gray-500">Connecting you with government-registered cooperative tradespeople</p>
+          <p className="text-xs text-gray-500">Government-registered cooperative tradespeople in your service radius</p>
         </div>
 
         <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl">
           <span className="text-sm">📍</span>
-          <span className="text-xs font-bold text-blue-900">{location.name}</span>
+          <select
+            value={location.city}
+            onChange={(e) => setCity(e.target.value)}
+            className="bg-transparent text-xs font-bold text-blue-900 border-none outline-none cursor-pointer"
+          >
+            <option value="Ranchi">Ranchi (Active Pilot)</option>
+            <option value="Raipur">Raipur (Out of Area)</option>
+          </select>
           <button
             onClick={() => autoDetectLocation()}
             disabled={detecting}
-            className="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded shadow-xs border border-blue-200"
+            className="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded shadow-xs border border-blue-200 ml-1"
           >
-            {detecting ? '...' : '🎯 Auto-Pick'}
+            {detecting ? '...' : '🎯 GPS'}
           </button>
         </div>
       </div>
@@ -110,7 +117,7 @@ const Search = () => {
 
         <div className="flex items-end">
           <button
-            onClick={resetToRanchi}
+            onClick={() => setCity(location.isOutsideRanchi ? 'Ranchi' : 'Raipur')}
             className={`w-full py-2.5 rounded-xl text-xs font-bold border transition ${
               !location.isOutsideRanchi 
                 ? 'bg-green-50 text-green-800 border-green-200' 

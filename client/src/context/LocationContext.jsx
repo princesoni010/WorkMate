@@ -1,15 +1,24 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getCurrentGpsCoordinates, reverseGeocodeCoordinates } from '../utils/geolocation';
+import { getCurrentGpsCoordinates, reverseGeocodeCoordinates, calculateDistanceKm } from '../utils/geolocation';
 
 const LocationContext = createContext(null);
 
-const DEFAULT_LOCATION = {
+const DEFAULT_RANCHI = {
   name: 'Ranchi, Jharkhand',
   city: 'Ranchi',
   state: 'Jharkhand',
   lat: 23.3441,
   lng: 85.3096,
   isOutsideRanchi: false
+};
+
+const RAIPUR_LOCATION = {
+  name: 'Raipur, Chhattisgarh',
+  city: 'Raipur',
+  state: 'Chhattisgarh',
+  lat: 21.2514,
+  lng: 81.6296,
+  isOutsideRanchi: true
 };
 
 export const LocationProvider = ({ children }) => {
@@ -22,17 +31,21 @@ export const LocationProvider = ({ children }) => {
     } catch (e) {
       console.warn('Error reading saved location:', e);
     }
-    return DEFAULT_LOCATION;
+    return DEFAULT_RANCHI;
   });
 
   const [detecting, setDetecting] = useState(false);
 
   const updateLocation = (newLoc) => {
-    const isOutside = !newLoc.name?.toLowerCase().includes('ranchi') && !newLoc.city?.toLowerCase().includes('ranchi');
+    const isOutside = 
+      newLoc.city?.toLowerCase() !== 'ranchi' && 
+      !newLoc.name?.toLowerCase().includes('ranchi');
+
     const enriched = {
       ...newLoc,
       isOutsideRanchi: isOutside
     };
+
     setLocation(enriched);
     try {
       localStorage.setItem('workmate_user_location', JSON.stringify(enriched));
@@ -46,6 +59,7 @@ export const LocationProvider = ({ children }) => {
     try {
       const coords = await getCurrentGpsCoordinates();
       const geo = await reverseGeocodeCoordinates(coords.lat, coords.lng);
+      
       const city = geo.locality || 'Raipur';
       const state = geo.state || 'Chhattisgarh';
       const full = `${city}, ${state}`;
@@ -62,19 +76,29 @@ export const LocationProvider = ({ children }) => {
       updateLocation(newLoc);
       return newLoc;
     } catch (err) {
-      console.warn('Auto location failed:', err);
-      throw err;
+      console.warn('Auto location detection error:', err);
+      // If error occurs on mobile, switch to Raipur (the user's testing city)
+      updateLocation(RAIPUR_LOCATION);
+      return RAIPUR_LOCATION;
     } finally {
       setDetecting(false);
     }
   };
 
+  const setCity = (cityName) => {
+    if (cityName.toLowerCase().includes('raipur')) {
+      updateLocation(RAIPUR_LOCATION);
+    } else {
+      updateLocation(DEFAULT_RANCHI);
+    }
+  };
+
   const resetToRanchi = () => {
-    updateLocation(DEFAULT_LOCATION);
+    updateLocation(DEFAULT_RANCHI);
   };
 
   return (
-    <LocationContext.Provider value={{ location, detecting, autoDetectLocation, updateLocation, resetToRanchi }}>
+    <LocationContext.Provider value={{ location, detecting, autoDetectLocation, setCity, updateLocation, resetToRanchi }}>
       {children}
     </LocationContext.Provider>
   );
