@@ -213,27 +213,31 @@ const MyBookings = () => {
                         setTrackingBooking(booking);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold hover:bg-blue-100 flex items-center space-x-1"
+                      className="px-2.5 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold hover:bg-blue-100 flex items-center space-x-1"
                     >
                       <span>🗺️</span>
-                      <span>Track Live Map</span>
+                      <span>Track Map</span>
                     </button>
                   )}
 
-                  {booking.status === 'completed' && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/customer/payment/${booking.rawId || booking.id}`);
-                      }}
-                      className="px-3 py-1.5 bg-[#FF9933] text-white rounded-lg text-xs font-bold hover:bg-orange-600"
-                    >
-                      Pay ₹{booking.price}
-                    </button>
-                  )}
+                  {/* Direct Payment & Official Receipt Trigger */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/customer/payment/${booking.rawId || booking.id}`);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 ${
+                      booking.status === 'completed'
+                        ? 'bg-green-600 text-white hover:bg-green-700 shadow-xs'
+                        : 'bg-[#FF9933] text-white hover:bg-orange-600 shadow-xs'
+                    }`}
+                  >
+                    <span>💳</span>
+                    <span>{booking.status === 'completed' ? 'View Receipt' : `Pay ₹${booking.price} / Receipt`}</span>
+                  </button>
 
-                  <div className="font-black text-gray-800 text-sm ml-2">₹{booking.price}</div>
+                  <div className="font-black text-gray-800 text-sm ml-1">₹{booking.price}</div>
                 </div>
               </div>
             </Card>
@@ -300,15 +304,14 @@ const MyBookings = () => {
 
               {/* Action Buttons */}
               <div className="space-y-2 pt-2">
-                {selectedBooking.status === 'completed' && (
-                  <Button 
-                    variant="primary" 
-                    className="w-full bg-[#FF9933] py-3 text-white font-bold text-sm" 
-                    onClick={() => navigate(`/customer/payment/${selectedBooking.rawId || selectedBooking.id}`)}
-                  >
-                    Proceed to Transparent Payment (₹{selectedBooking.price})
-                  </Button>
-                )}
+                <Button 
+                  variant="primary" 
+                  className="w-full bg-[#FF9933] hover:bg-orange-600 py-3 text-white font-bold text-sm flex items-center justify-center space-x-2" 
+                  onClick={() => navigate(`/customer/payment/${selectedBooking.rawId || selectedBooking.id}`)}
+                >
+                  <span>💳</span>
+                  <span>View Transparent Fare Breakdown & Receipt (₹{selectedBooking.price})</span>
+                </Button>
 
                 <Button 
                   variant="outline" 
