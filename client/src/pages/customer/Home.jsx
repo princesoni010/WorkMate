@@ -11,7 +11,12 @@ const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  const [currentLocation, setCurrentLocation] = useState('Ranchi, Jharkhand');
+  const [currentLocation, setCurrentLocation] = useState(
+    localStorage.getItem('user_location_full') || 'Ranchi, Jharkhand'
+  );
+  const [currentCity, setCurrentCity] = useState(
+    localStorage.getItem('user_location_city') || 'Ranchi'
+  );
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [recentBookings, setRecentBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
@@ -47,7 +52,14 @@ const Home = () => {
     try {
       const coords = await getCurrentGpsCoordinates();
       const geo = await reverseGeocodeCoordinates(coords.lat, coords.lng);
-      setCurrentLocation(`${geo.locality || 'Ranchi'}, ${geo.state || 'Jharkhand'}`);
+      const city = geo.locality || 'Raipur';
+      const full = `${city}, ${geo.state || 'Chhattisgarh'}`;
+      setCurrentLocation(full);
+      setCurrentCity(city);
+      localStorage.setItem('user_location_full', full);
+      localStorage.setItem('user_location_city', city);
+      localStorage.setItem('user_lat', coords.lat);
+      localStorage.setItem('user_lng', coords.lng);
     } catch (err) {
       console.warn('Auto locate error:', err);
     } finally {
@@ -55,12 +67,20 @@ const Home = () => {
     }
   };
 
+  const handleResetToRanchi = () => {
+    setCurrentLocation('Ranchi, Jharkhand');
+    setCurrentCity('Ranchi');
+    localStorage.setItem('user_location_full', 'Ranchi, Jharkhand');
+    localStorage.setItem('user_location_city', 'Ranchi');
+  };
+
   const userName = user?.name || 'Customer';
+  const isOutsideRanchi = !currentLocation.toLowerCase().includes('ranchi');
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
       {/* Header & Location Auto-Pickup */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
         <div>
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Welcome back</p>
           <h1 className="text-xl font-bold text-gray-900">Hello, {userName}! 👋</h1>
@@ -74,10 +94,33 @@ const Home = () => {
             disabled={detectingLocation}
             className="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded shadow-xs border border-blue-200"
           >
-            {detectingLocation ? '...' : '🎯 Auto-Pick'}
+            {detectingLocation ? 'Locating...' : '🎯 Auto-Pick'}
           </button>
         </div>
       </div>
+
+      {/* Out of Service Region Notice Banner if auto-picked location is outside active pilot district */}
+      {isOutsideRanchi && (
+        <div className="mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
+          <div className="flex items-start space-x-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <p className="text-xs font-bold text-amber-900 uppercase tracking-wider">
+                Limited Cooperative Coverage in {currentLocation}
+              </p>
+              <p className="text-xs text-amber-800 mt-0.5">
+                Our Labour Cooperative Societies are actively serving <strong>Ranchi, Jharkhand</strong> pilot district. Raipur societies are currently onboarding.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleResetToRanchi}
+            className="text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xs"
+          >
+            Switch to Ranchi (Active Hub)
+          </button>
+        </div>
+      )}
 
       {/* Trust Badges */}
       <div className="grid grid-cols-3 gap-2 mb-6 text-center">
@@ -130,7 +173,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Recent Bookings Section (Only real user data) */}
+      {/* Recent Bookings Section */}
       <div>
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-base font-bold text-gray-800">Recent Service Bookings</h2>
