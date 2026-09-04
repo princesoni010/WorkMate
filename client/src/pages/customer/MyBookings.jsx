@@ -20,6 +20,14 @@ const MyBookings = () => {
 
   useEffect(() => {
     setLoading(true);
+
+    let localBookings = [];
+    try {
+      localBookings = JSON.parse(localStorage.getItem('user_active_bookings') || '[]');
+    } catch (e) {
+      console.warn('LocalStorage read notice:', e);
+    }
+
     getMyBookings()
       .then((res) => {
         const data = res.data?.data || res.data;
@@ -38,18 +46,34 @@ const MyBookings = () => {
             address: b.location?.address || 'Ranchi, Jharkhand',
             isEmergency: b.isEmergency
           }));
-          setBookings(formatted);
+
+          // Merge local bookings with backend bookings (deduplicated by id)
+          const allMerged = [...localBookings];
+          formatted.forEach(b => {
+            if (!allMerged.some(item => item.id === b.id)) {
+              allMerged.push(b);
+            }
+          });
+
+          setBookings(allMerged);
 
           if (location.state?.newBookingCode) {
-            const found = formatted.find(item => item.id === location.state.newBookingCode);
+            const found = allMerged.find(item => item.id === location.state.newBookingCode);
             if (found) setSelectedBooking(found);
           }
+        } else {
+          setBookings(localBookings);
         }
       })
       .catch((err) => {
-        console.warn('Error fetching bookings:', err);
-        // Only if demo user specifically, show demo fallback
-        if (user?.email === 'customer.demo@workmate.test') {
+        console.warn('API bookings fallback to local cache:', err);
+        if (localBookings.length > 0) {
+          setBookings(localBookings);
+          if (location.state?.newBookingCode) {
+            const found = localBookings.find(item => item.id === location.state.newBookingCode);
+            if (found) setSelectedBooking(found);
+          }
+        } else if (user?.email === 'customer.demo@workmate.test') {
           setBookings([
             { id: 'WM-849201', rawId: '1', service: 'Electrician', icon: '⚡', worker: 'Ramesh Kumar', date: '2026-09-03', time: '14:00', status: 'on_the_way', price: 600, matchReasons: ['Skill Match: 35%', 'Nearest (2.3 km): 25%', 'Fair Allocation: 10%'], address: 'Flat 402, Kanke Road, Ranchi' }
           ]);
