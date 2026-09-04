@@ -22,7 +22,11 @@ const PaymentPage = () => {
     let found = null;
     try {
       const locals = JSON.parse(localStorage.getItem('user_active_bookings') || '[]');
-      found = locals.find(b => b.id === bookingId || b.rawId === bookingId || b._id === bookingId);
+      if (bookingId) {
+        found = locals.find(b => b.id === bookingId || b.rawId === bookingId || b._id === bookingId);
+      } else if (locals.length > 0) {
+        found = locals[0];
+      }
     } catch (e) {
       console.warn('LocalStorage search error:', e);
     }

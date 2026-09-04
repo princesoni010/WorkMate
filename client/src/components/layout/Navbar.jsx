@@ -29,6 +29,21 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex md:items-center md:space-x-4">
+            {user && user.role === 'customer' && (
+              <div className="flex items-center space-x-2 mr-2">
+                <Link to="/customer/home" className="text-xs font-semibold text-gray-600 hover:text-primary px-2.5 py-1.5 rounded-lg hover:bg-gray-50">
+                  {t('nav.home')}
+                </Link>
+                <Link to="/customer/bookings" className="text-xs font-semibold text-gray-600 hover:text-primary px-2.5 py-1.5 rounded-lg hover:bg-gray-50">
+                  {t('nav.bookings')}
+                </Link>
+                <Link to="/customer/payment" className="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 px-2.5 py-1.5 rounded-lg border border-orange-200 flex items-center gap-1">
+                  <span>💳</span>
+                  <span>Payment & Receipt</span>
+                </Link>
+              </div>
+            )}
+
             <button
               onClick={() => changeLanguage(language === 'en' ? 'hi' : 'en')}
               className="flex items-center text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"

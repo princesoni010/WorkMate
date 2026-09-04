@@ -70,6 +70,7 @@ function App() {
               <Route path="/customer/book" element={<ProtectedRoute roles={['customer']}><AppLayout><BookingForm /></AppLayout></ProtectedRoute>} />
               <Route path="/customer/book/:workerId" element={<ProtectedRoute roles={['customer']}><AppLayout><BookingForm /></AppLayout></ProtectedRoute>} />
               <Route path="/customer/bookings" element={<ProtectedRoute roles={['customer']}><AppLayout><MyBookings /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/payment" element={<ProtectedRoute roles={['customer']}><AppLayout><PaymentPage /></AppLayout></ProtectedRoute>} />
               <Route path="/customer/payment/:bookingId" element={<ProtectedRoute roles={['customer']}><AppLayout><PaymentPage /></AppLayout></ProtectedRoute>} />
               <Route path="/customer/profile" element={<ProtectedRoute roles={['customer']}><AppLayout><CustomerProfile /></AppLayout></ProtectedRoute>} />
 

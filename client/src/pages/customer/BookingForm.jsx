@@ -179,9 +179,9 @@ const BookingForm = () => {
       console.warn('LocalStorage save note:', err);
     }
 
-    // Immediate guaranteed navigation to Bookings page
+    // Immediate guaranteed navigation to Payment & Receipt page for the created booking
     setTimeout(() => {
-      navigate('/customer/bookings', { state: { newBookingCode: newBookingObj.id } });
+      navigate(`/customer/payment/${newBookingObj.id}`);
     }, 150);
   };
 

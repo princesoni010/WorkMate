@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Calendar, User, Briefcase, DollarSign } from 'lucide-react';
+import { Home, Calendar, User, Briefcase, DollarSign, Receipt } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 
 const BottomNav = () => {
@@ -15,6 +15,7 @@ const BottomNav = () => {
   const customerLinks = [
     { to: '/customer/home', icon: Home, label: t('nav.home') },
     { to: '/customer/bookings', icon: Calendar, label: t('nav.bookings') },
+    { to: '/customer/payment', icon: Receipt, label: 'Receipt' },
     { to: '/customer/profile', icon: User, label: t('nav.profile') },
   ];
 
