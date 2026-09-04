@@ -28,9 +28,15 @@ const WorkerProfileView = () => {
     }
   };
 
-  const workerName = user?.name || 'Ramesh Kumar';
-  const workerPhone = user?.phone || '+91 98765 43211';
-  const workerEmail = user?.email || 'worker.demo@workmate.test';
+  const isDemo = user?.email === 'worker.demo@workmate.test';
+  const workerName = user?.name || user?.email?.split('@')[0] || 'Worker';
+  const workerPhone = user?.phone || 'Not provided';
+  const workerEmail = user?.email || 'Registered Worker';
+
+  const societyName = isDemo ? 'Ranchi Shramik Sahakari Samiti' : (user?.cooperativeName || 'Ranchi Shramik Sahakari Samiti');
+  const rcsNo = isDemo ? 'RCS/JHR/2023/LCS-402' : (user?.rcsNo || 'RCS/JHR/2023/LCS-402');
+  const memberId = isDemo ? 'MEM-88219' : (user?.memberId || 'MEM-' + Math.floor(10000 + Math.random() * 90000));
+  const welfareBalance = isDemo ? '₹1,440.00' : (user?.welfareBalance ? `₹${user.welfareBalance}` : '₹0.00');
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -54,7 +60,7 @@ const WorkerProfileView = () => {
             {profilePhoto ? (
               <img src={profilePhoto} alt={workerName} className="w-full h-full object-cover" />
             ) : (
-              <span>{workerName[0]}</span>
+              <span>{workerName[0]?.toUpperCase() || 'W'}</span>
             )}
             <div className="absolute inset-0 bg-black/40 text-white text-[9px] font-bold flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition">
               <span>📷</span>
@@ -70,10 +76,10 @@ const WorkerProfileView = () => {
             <p className="text-xs text-gray-500 font-medium">{workerEmail} • {workerPhone}</p>
             <div className="flex flex-wrap gap-1.5 mt-1.5">
               <span className="text-[11px] bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded-full">
-                Verified Cooperative Member
+                {isDemo ? 'Verified Cooperative Member' : 'Active Registered Worker'}
               </span>
               <span className="text-[11px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">
-                ITI Electrician
+                ITI Certified
               </span>
             </div>
           </div>
@@ -91,29 +97,25 @@ const WorkerProfileView = () => {
       <Card className="p-6 mb-6 shadow-sm border border-gray-200 bg-white">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400">Cooperative Society</h2>
-          <span className="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">Active Status</span>
+          <span className="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">Active Member</span>
         </div>
 
         <div className="space-y-3 text-sm">
           <div className="flex justify-between py-2 border-b border-gray-100">
             <span className="text-gray-500">Society Name</span>
-            <span className="font-bold text-gray-800">Ranchi Shramik Sahakari Samiti</span>
+            <span className="font-bold text-gray-800">{societyName}</span>
           </div>
           <div className="flex justify-between py-2 border-b border-gray-100">
             <span className="text-gray-500">RCS State Reg No</span>
-            <span className="font-mono font-bold text-purple-700">RCS/JHR/2023/LCS-402</span>
+            <span className="font-mono font-bold text-purple-700">{rcsNo}</span>
           </div>
           <div className="flex justify-between py-2 border-b border-gray-100">
             <span className="text-gray-500">Cooperative Member Passbook</span>
-            <span className="font-mono font-semibold text-gray-800">MEM-88219</span>
+            <span className="font-mono font-semibold text-gray-800">{memberId}</span>
           </div>
           <div className="flex justify-between py-2 border-b border-gray-100">
             <span className="text-gray-500">Parent Federation</span>
             <span className="font-semibold text-gray-800">Jharkhand State Labour Fed</span>
-          </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-500">e-Shram National ID</span>
-            <span className="font-mono font-semibold text-gray-800">UAN 9840-2918-4421</span>
           </div>
           <div className="flex justify-between py-2">
             <span className="text-gray-500">Assigned Service Radius</span>
@@ -124,7 +126,7 @@ const WorkerProfileView = () => {
 
       {/* Language & Preference */}
       <Card className="p-6 mb-6 shadow-sm border border-gray-200 bg-white">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4">Preferences</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4">Preferences & Welfare</h2>
         
         <div className="flex justify-between items-center py-2 border-b border-gray-100">
           <div>
@@ -144,7 +146,7 @@ const WorkerProfileView = () => {
             <p className="text-sm font-semibold text-gray-800">Welfare Ledger Balance</p>
             <p className="text-xs text-gray-400">Your accumulated 2% collective social security credit</p>
           </div>
-          <span className="text-base font-black text-green-700">₹1,440.00</span>
+          <span className="text-base font-black text-green-700">{welfareBalance}</span>
         </div>
       </Card>
 

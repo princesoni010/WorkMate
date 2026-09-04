@@ -10,11 +10,18 @@ const WorkerHome = () => {
   const [isOnline, setIsOnline] = useState(true);
   const [showLiveMap, setShowLiveMap] = useState(false);
 
-  const workerName = user?.name || "Ramesh Kumar";
-  const earnings = { today: 1080, week: 5400, month: 24800, welfareBalance: 2480 };
-  const stats = { rating: 4.8, acceptance: '96%', totalJobs: 142 };
+  const isDemoWorker = user?.email === 'worker.demo@workmate.test';
+  const workerName = user?.name || user?.email?.split('@')[0] || 'Worker';
+
+  const earnings = isDemoWorker 
+    ? { today: 1080, week: 5400, month: 24800, welfareBalance: 2480 }
+    : { today: 0, week: 0, month: 0, welfareBalance: 0 };
+
+  const stats = isDemoWorker
+    ? { rating: '4.8 ★', acceptance: '96%', totalJobs: 142 }
+    : { rating: '5.0 ★ (New)', acceptance: '100%', totalJobs: 0 };
   
-  const activeJob = {
+  const activeJob = isDemoWorker ? {
     id: 'WM-849201',
     customer: 'Priya Sharma',
     customerPhone: '9876543210',
@@ -26,7 +33,7 @@ const WorkerHome = () => {
     lat: 23.3641,
     lng: 85.3296,
     status: 'on_the_way'
-  };
+  } : null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
@@ -34,10 +41,10 @@ const WorkerHome = () => {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-gradient-to-tr from-[#138808] to-green-400 text-white rounded-2xl flex items-center justify-center text-xl font-black shadow-sm">
-            {workerName[0]}
+            {workerName[0]?.toUpperCase() || 'W'}
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Namaste, {workerName}!</h1>
+            <h1 className="text-xl font-bold text-gray-900">Namaste, {workerName}! 👋</h1>
             <p className="text-xs text-green-700 font-semibold flex items-center gap-1">
               <span>🤝</span>
               <span>Ranchi Shramik Sahakari Samiti (Verified)</span>
@@ -60,7 +67,7 @@ const WorkerHome = () => {
             {isOnline ? 'You are Online & Available' : 'You are Currently Offline'}
           </div>
           <p className="text-xs text-gray-600 mt-0.5">
-            {isOnline ? 'Active on Ranchi matching network for nearby service calls' : 'Turn on to receive instant gig requests'}
+            {isOnline ? 'Active on cooperative matching network for nearby service calls' : 'Turn on to receive instant gig requests'}
           </p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
@@ -69,145 +76,111 @@ const WorkerHome = () => {
         </label>
       </Card>
 
-      {/* Active Trip GPS Navigation Feature */}
+      {/* Real-time Earnings Quick Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <Card className="p-3.5 text-center border-l-4 border-green-600 bg-white">
+          <span className="text-[11px] font-bold text-gray-400 uppercase">Today's Pay</span>
+          <div className="text-xl font-black text-gray-900 mt-0.5">₹{earnings.today}</div>
+          <span className="text-[10px] text-green-700 font-semibold">90% Direct Share</span>
+        </Card>
+
+        <Card className="p-3.5 text-center border-l-4 border-blue-600 bg-white">
+          <span className="text-[11px] font-bold text-gray-400 uppercase">This Week</span>
+          <div className="text-xl font-black text-gray-900 mt-0.5">₹{earnings.week}</div>
+          <span className="text-[10px] text-blue-700 font-semibold">{isDemoWorker ? '10 Jobs' : '0 Jobs'}</span>
+        </Card>
+
+        <Card className="p-3.5 text-center border-l-4 border-orange-500 bg-white">
+          <span className="text-[11px] font-bold text-gray-400 uppercase">Coop Welfare (2%)</span>
+          <div className="text-xl font-black text-orange-600 mt-0.5">₹{earnings.welfareBalance}</div>
+          <span className="text-[10px] text-gray-400">Social Security Pool</span>
+        </Card>
+
+        <Card className="p-3.5 text-center border-l-4 border-purple-600 bg-white">
+          <span className="text-[11px] font-bold text-gray-400 uppercase">Rating / Trust</span>
+          <div className="text-xl font-black text-gray-900 mt-0.5">{stats.rating}</div>
+          <span className="text-[10px] text-purple-700 font-semibold">{stats.totalJobs} Total Jobs</span>
+        </Card>
+      </div>
+
+      {/* Active Job / Empty State */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-ping"></span>
-            <h2 className="font-bold text-gray-900 text-base">Active Job Navigation</h2>
-          </div>
-          <button
-            onClick={() => setShowLiveMap(!showLiveMap)}
-            className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-100 flex items-center space-x-1"
+          <h2 className="text-base font-bold text-gray-800">Current Assigned Work Order</h2>
+          <span 
+            className="text-xs font-bold text-blue-600 cursor-pointer" 
+            onClick={() => navigate('/worker/jobs')}
           >
-            <span>🗺️</span>
-            <span>{showLiveMap ? 'Hide Map' : 'Open Leaflet GPS Route'}</span>
-          </button>
+            View All Jobs →
+          </span>
         </div>
 
-        {showLiveMap ? (
-          <WorkerNavigationMap job={activeJob} />
-        ) : (
-          <Card className="p-4 border-l-4 border-orange-500 bg-white hover:shadow-md transition">
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+        {activeJob ? (
+          <Card className="p-5 border-2 border-green-500/40 bg-white shadow-sm">
+            <div className="flex justify-between items-start mb-3">
               <div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded">
-                    🛵 On the Way
-                  </span>
-                  <span className="text-xs text-gray-400 font-mono">#{activeJob.id}</span>
-                </div>
-                <h3 className="font-bold text-gray-900 text-base mt-1">{activeJob.service}</h3>
-                <p className="text-xs text-gray-600">📍 {activeJob.location} • <span className="font-bold text-blue-700">{activeJob.distance} away</span></p>
+                <span className="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                  Live Dispatch
+                </span>
+                <h3 className="text-lg font-bold text-gray-900 mt-1">{activeJob.service}</h3>
+                <p className="text-xs text-gray-500">Customer: <strong className="text-gray-800">{activeJob.customer}</strong> • {activeJob.customerPhone}</p>
               </div>
+              <div className="text-right">
+                <span className="text-xl font-black text-green-700">₹{activeJob.earnings}</span>
+                <p className="text-[10px] text-gray-400">Your 90% share</p>
+              </div>
+            </div>
 
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowLiveMap(true)}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center space-x-1"
-                >
-                  <span>🗺️</span>
-                  <span>Open Route Map</span>
-                </button>
-                <a
-                  href={`tel:${activeJob.customerPhone}`}
-                  className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold shadow-sm"
-                >
-                  📞 Call
-                </a>
+            <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-2.5 rounded-xl border border-gray-100 mb-4">
+              <div>📍 <span className="font-medium text-gray-700">{activeJob.location}</span></div>
+              <div>🕒 <span className="font-medium text-gray-700">{activeJob.time}</span></div>
+              <div>🛵 Distance: <strong className="text-blue-700">{activeJob.distance}</strong></div>
+              <div>🔒 Status: <strong className="text-orange-600 uppercase text-[11px]">{activeJob.status.replace('_', ' ')}</strong></div>
+            </div>
+
+            {/* Live Leaflet Map Container */}
+            {showLiveMap && (
+              <div className="mb-4">
+                <WorkerNavigationMap 
+                  job={activeJob} 
+                  onStatusChange={(id, newStatus) => {
+                    activeJob.status = newStatus;
+                  }} 
+                />
               </div>
+            )}
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowLiveMap(!showLiveMap)}
+                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center space-x-1"
+              >
+                <span>🗺️</span>
+                <span>{showLiveMap ? 'Hide GPS Map' : 'Open Leaflet Route Navigation'}</span>
+              </button>
+              <button
+                onClick={() => navigate('/worker/jobs')}
+                className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition"
+              >
+                Manage Job
+              </button>
             </div>
           </Card>
-        )}
-      </div>
-
-      {/* Earnings & 2% Welfare Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="p-4 bg-gradient-to-br from-blue-900 to-indigo-900 text-white rounded-2xl md:col-span-2">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-xs text-blue-200 font-bold uppercase tracking-wider">Earnings Overview (90% Fair Share)</span>
-            <span className="text-xs bg-blue-800 text-blue-200 px-2 py-0.5 rounded-full">Transparent</span>
-          </div>
-          
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <p className="text-xs text-blue-200">Today</p>
-              <p className="text-2xl font-black text-white">₹{earnings.today}</p>
-            </div>
-            <div>
-              <p className="text-xs text-blue-200">This Week</p>
-              <p className="text-xl font-bold text-white">₹{earnings.week}</p>
-            </div>
-            <div>
-              <p className="text-xs text-blue-200">This Month</p>
-              <p className="text-xl font-bold text-orange-400">₹{earnings.month}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-blue-800/80 flex justify-between items-center text-xs text-blue-200">
-            <span>Direct Bank Payouts • Weekly Settlement</span>
-            <button onClick={() => navigate('/worker/earnings')} className="text-orange-300 font-bold hover:underline">
-              View Detailed Ledger →
-            </button>
-          </div>
-        </Card>
-
-        {/* 2% Cooperative Welfare Fund Card */}
-        <Card className="p-4 bg-gradient-to-br from-green-800 to-emerald-900 text-white rounded-2xl flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-green-200">2% Welfare Fund</span>
-              <span className="text-base">🛡️</span>
-            </div>
-            <p className="text-2xl font-black text-white">₹{earnings.welfareBalance}</p>
-            <p className="text-[11px] text-green-200 mt-1">
-              Accumulated collective security pool for health, insurance & training benefits.
+        ) : (
+          <Card className="p-8 text-center border-dashed border-2 border-gray-200 bg-white rounded-2xl">
+            <div className="text-4xl mb-2">🛵</div>
+            <h3 className="text-base font-bold text-gray-800 mb-1">No Active Job Assigned</h3>
+            <p className="text-xs text-gray-400 max-w-sm mx-auto mb-4">
+              You are currently <strong>Online</strong>. When a customer in your service radius requests a service, the Fair Matching Engine will dispatch it to you!
             </p>
-          </div>
-
-          <button
-            onClick={() => navigate('/worker/earnings')}
-            className="mt-3 text-xs bg-white/20 hover:bg-white/30 text-white font-bold py-1.5 px-3 rounded-lg text-center"
-          >
-            Check Welfare Balance
-          </button>
-        </Card>
-      </div>
-
-      {/* Quick Action Navigation Buttons */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <Card className="p-4 text-center cursor-pointer hover:bg-orange-50 border border-gray-200 transition" onClick={() => navigate('/worker/jobs')}>
-          <div className="text-2xl mb-1">📋</div>
-          <div className="font-bold text-xs text-gray-800">All Jobs</div>
-        </Card>
-        <Card className="p-4 text-center cursor-pointer hover:bg-green-50 border border-gray-200 transition" onClick={() => navigate('/worker/earnings')}>
-          <div className="text-2xl mb-1">💰</div>
-          <div className="font-bold text-xs text-gray-800">Earnings Ledger</div>
-        </Card>
-        <Card className="p-4 text-center cursor-pointer hover:bg-blue-50 border border-gray-200 transition" onClick={() => navigate('/worker/register')}>
-          <div className="text-2xl mb-1">🛠️</div>
-          <div className="font-bold text-xs text-gray-800">Skills & Radius</div>
-        </Card>
-        <Card className="p-4 text-center cursor-pointer hover:bg-red-50 border border-gray-200 transition" onClick={() => alert('Grievance ticket created. Cooperative Admin assigned.')}>
-          <div className="text-2xl mb-1">⚖️</div>
-          <div className="font-bold text-xs text-gray-800">Raise Grievance</div>
-        </Card>
-      </div>
-
-      {/* Performance Stats */}
-      <div className="grid grid-cols-3 gap-3 bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
-        <div className="text-center">
-          <div className="font-black text-lg text-orange-500">★ {stats.rating}</div>
-          <div className="text-[11px] font-semibold text-gray-500">Rating (142 reviews)</div>
-        </div>
-        <div className="text-center border-x border-gray-200">
-          <div className="font-black text-lg text-green-700">{stats.acceptance}</div>
-          <div className="text-[11px] font-semibold text-gray-500">Job Acceptance</div>
-        </div>
-        <div className="text-center">
-          <div className="font-black text-lg text-blue-900">{stats.totalJobs}</div>
-          <div className="text-[11px] font-semibold text-gray-500">Jobs Completed</div>
-        </div>
+            <button
+              onClick={() => navigate('/worker/jobs')}
+              className="px-4 py-2 bg-[#138808] hover:bg-green-700 text-white text-xs font-bold rounded-xl shadow-xs"
+            >
+              Check Job Queue
+            </button>
+          </Card>
+        )}
       </div>
     </div>
   );
