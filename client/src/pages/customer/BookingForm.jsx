@@ -36,10 +36,10 @@ const BookingForm = () => {
 
   const [formData, setFormData] = useState({
     serviceCategory: 'electrician',
-    subService: '',
+    subService: 'Fan & Wiring Repair',
     description: '',
     date: new Date().toISOString().split('T')[0],
-    time: '10:00',
+    time: '14:00',
     isEmergency: false,
     address: 'Flat 402, Shanti Kunj, Kanke Road',
     locality: globalLoc.city || 'Ranchi',
@@ -61,9 +61,7 @@ const BookingForm = () => {
             }
           }
         })
-        .catch((err) => {
-          console.warn('Worker lookup fallback:', err);
-          // Set friendly worker info if workerId was w1/demo
+        .catch(() => {
           setTargetWorker({
             _id: workerId,
             fullName: 'Ramesh Kumar',
@@ -121,11 +119,15 @@ const BookingForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     setSubmitting(true);
     setError('');
 
-    const scheduledDateTime = new Date(`${formData.date}T${formData.time || '10:00'}:00`);
+    const scheduledDateTime = new Date(`${formData.date}T${formData.time || '14:00'}:00`);
     const generatedCode = 'WM-' + Math.floor(100000 + Math.random() * 900000);
 
     const payload = {
@@ -149,8 +151,8 @@ const BookingForm = () => {
     try {
       const res = await createBooking(payload);
       createdBooking = res.data?.data || res.data;
-    } catch (err) {
-      console.warn('Backend API booking note (using smart client resolution):', err);
+    } catch (apiErr) {
+      console.warn('API booking sync notice:', apiErr?.message);
     }
 
     // Always create local booking record for customer
@@ -174,11 +176,13 @@ const BookingForm = () => {
       existing.unshift(newBookingObj);
       localStorage.setItem('user_active_bookings', JSON.stringify(existing));
     } catch (err) {
-      console.warn('LocalStorage booking save note:', err);
+      console.warn('LocalStorage save note:', err);
     }
 
-    // Direct seamless navigation to Bookings page with newly created booking
-    navigate('/customer/bookings', { state: { newBookingCode: newBookingObj.id } });
+    // Immediate guaranteed navigation to Bookings page
+    setTimeout(() => {
+      navigate('/customer/bookings', { state: { newBookingCode: newBookingObj.id } });
+    }, 150);
   };
 
   return (
@@ -457,7 +461,8 @@ const BookingForm = () => {
               </Button>
             ) : (
               <Button 
-                type="submit" 
+                type="button" 
+                onClick={handleSubmit}
                 variant="primary" 
                 className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold"
                 disabled={submitting}
