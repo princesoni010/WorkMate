@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, StatusBadge } from '../../components/common';
-import { getCurrentGpsCoordinates, reverseGeocodeCoordinates } from '../../utils/geolocation';
-import { getWorkers } from '../../services/workerService';
+import { Button, Card } from '../../components/common';
+import { useLocationState } from '../../context/LocationContext';
 
 const ALL_DEMO_WORKERS = [
   { id: 'w1', name: 'Ramesh Kumar', skill: 'Electrician', rating: 4.8, experience: 5, distance: '1.2 km', coop: 'Ranchi Shramik Sahakari Samiti', district: 'Ranchi', rcsNo: 'RCS/JHR/2023/LCS-402', verified: true, matchReasons: ['Highest Rated', 'Nearest (1.2 km)', '90% Fair Share'] },
@@ -17,29 +16,28 @@ const ALL_DEMO_WORKERS = [
 const Search = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const initialService = searchParams.get('service') || '';
 
-  const [locationName, setLocationName] = useState(
-    localStorage.getItem('user_location_full') || 'Ranchi, Jharkhand'
-  );
-  const [currentCity, setCurrentCity] = useState(
-    localStorage.getItem('user_location_city') || 'Ranchi'
-  );
-  const [detectingLocation, setDetectingLocation] = useState(false);
+  const { location, detecting, autoDetectLocation, resetToRanchi } = useLocationState();
+
   const [selectedService, setSelectedService] = useState(initialService);
   const [selectedRating, setSelectedRating] = useState('any');
   const [loading, setLoading] = useState(false);
   const [workers, setWorkers] = useState([]);
   const [requestSubmitted, setRequestSubmitted] = useState(false);
 
-  const isOutsideRanchi = !locationName.toLowerCase().includes('ranchi');
+  useEffect(() => {
+    if (initialService) {
+      setSelectedService(initialService);
+    }
+  }, [initialService]);
 
-  const filterAndSetWorkers = () => {
+  useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
-      // If user's auto-detected location is outside Ranchi (e.g. Raipur), return 0 workers for that area
-      if (isOutsideRanchi) {
+    const timer = setTimeout(() => {
+      // If user's global location is outside Ranchi (e.g. Raipur), return 0 workers for that area
+      if (location.isOutsideRanchi) {
         setWorkers([]);
       } else {
         let list = [...ALL_DEMO_WORKERS];
@@ -52,37 +50,10 @@ const Search = () => {
         setWorkers(list);
       }
       setLoading(false);
-    }, 300);
-  };
+    }, 250);
 
-  useEffect(() => {
-    filterAndSetWorkers();
-  }, [selectedService, selectedRating, locationName]);
-
-  const handleAutoLocate = async () => {
-    setDetectingLocation(true);
-    try {
-      const coords = await getCurrentGpsCoordinates();
-      const geo = await reverseGeocodeCoordinates(coords.lat, coords.lng);
-      const city = geo.locality || 'Raipur';
-      const full = `${city}, ${geo.state || 'Chhattisgarh'}`;
-      setLocationName(full);
-      setCurrentCity(city);
-      localStorage.setItem('user_location_full', full);
-      localStorage.setItem('user_location_city', city);
-    } catch (err) {
-      console.warn('Auto locate error:', err);
-    } finally {
-      setDetectingLocation(false);
-    }
-  };
-
-  const handleSwitchToRanchi = () => {
-    setLocationName('Ranchi, Jharkhand');
-    setCurrentCity('Ranchi');
-    localStorage.setItem('user_location_full', 'Ranchi, Jharkhand');
-    localStorage.setItem('user_location_city', 'Ranchi');
-  };
+    return () => clearTimeout(timer);
+  }, [selectedService, selectedRating, location]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
@@ -95,13 +66,13 @@ const Search = () => {
 
         <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl">
           <span className="text-sm">📍</span>
-          <span className="text-xs font-bold text-blue-900">{locationName}</span>
+          <span className="text-xs font-bold text-blue-900">{location.name}</span>
           <button
-            onClick={handleAutoLocate}
-            disabled={detectingLocation}
+            onClick={() => autoDetectLocation()}
+            disabled={detecting}
             className="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded shadow-xs border border-blue-200"
           >
-            {detectingLocation ? '...' : '🎯 Auto-Pick'}
+            {detecting ? '...' : '🎯 Auto-Pick'}
           </button>
         </div>
       </div>
@@ -139,14 +110,14 @@ const Search = () => {
 
         <div className="flex items-end">
           <button
-            onClick={handleSwitchToRanchi}
+            onClick={resetToRanchi}
             className={`w-full py-2.5 rounded-xl text-xs font-bold border transition ${
-              !isOutsideRanchi 
+              !location.isOutsideRanchi 
                 ? 'bg-green-50 text-green-800 border-green-200' 
                 : 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100'
             }`}
           >
-            {!isOutsideRanchi ? '✓ Serving Ranchi District' : '🔄 Switch to Active Ranchi Hub'}
+            {!location.isOutsideRanchi ? '✓ Serving Ranchi District' : '🔄 Switch to Active Ranchi Hub'}
           </button>
         </div>
       </div>
@@ -154,7 +125,7 @@ const Search = () => {
       {/* Results Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-bold text-sm text-gray-800">
-          {workers.length} verified cooperative workers found {isOutsideRanchi ? `in ${locationName}` : 'nearby'}
+          {workers.length} verified cooperative workers found {location.isOutsideRanchi ? `in ${location.name}` : 'nearby'}
         </h2>
         <span className="text-xs text-gray-400">90/8/2 Fair Share Protected</span>
       </div>
@@ -162,28 +133,28 @@ const Search = () => {
       {/* Results Grid / Custom Out-of-Area Empty State */}
       {loading ? (
         <div className="text-center py-16 text-gray-400 text-sm">Searching verified cooperative database...</div>
-      ) : isOutsideRanchi || workers.length === 0 ? (
+      ) : location.isOutsideRanchi || workers.length === 0 ? (
         <Card className="p-8 text-center border-dashed border-2 border-orange-200 bg-gradient-to-b from-orange-50/40 to-white rounded-3xl shadow-sm">
           <div className="text-5xl mb-3">📍</div>
           <h3 className="text-lg font-bold text-gray-900 mb-1">
-            No Cooperative Workers Currently Available in {locationName}
+            No Cooperative Workers Currently Available in {location.name}
           </h3>
           <p className="text-xs text-gray-600 max-w-md mx-auto mb-5 leading-relaxed">
-            Our Labour Cooperative Societies are currently active and serving the <strong>Ranchi, Jharkhand</strong> pilot district. Cooperative federations in <strong>{currentCity}</strong> are currently completing Registrar of Cooperative Societies (RCS) onboarding.
+            Our Labour Cooperative Societies are currently active and serving the <strong>Ranchi, Jharkhand</strong> pilot district. Cooperative federations in <strong>{location.city}</strong> are currently completing Registrar of Cooperative Societies (RCS) onboarding.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-3 max-w-md mx-auto">
             <Button 
               variant="primary" 
               className="bg-[#FF9933] hover:bg-orange-600 text-white text-xs font-bold py-2.5 px-4"
-              onClick={handleSwitchToRanchi}
+              onClick={resetToRanchi}
             >
               🔄 Switch to Ranchi Active District (Demo)
             </Button>
             
             {requestSubmitted ? (
               <span className="text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-4 py-2.5 rounded-xl">
-                ✓ Notified {currentCity} Cooperative Federation!
+                ✓ Notified {location.city} Cooperative Federation!
               </span>
             ) : (
               <Button 
@@ -191,7 +162,7 @@ const Search = () => {
                 className="text-xs font-bold text-blue-700 border-blue-200 hover:bg-blue-50 py-2.5 px-4"
                 onClick={() => setRequestSubmitted(true)}
               >
-                📢 Request Coverage for {currentCity}
+                📢 Request Coverage for {location.city}
               </Button>
             )}
           </div>

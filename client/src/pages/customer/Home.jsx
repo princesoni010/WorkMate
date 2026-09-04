@@ -3,21 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, Button, StatusBadge } from '../../components/common';
 import useAuth from '../../hooks/useAuth';
+import { useLocationState } from '../../context/LocationContext';
 import { getMyBookings } from '../../services/bookingService';
-import { getCurrentGpsCoordinates, reverseGeocodeCoordinates } from '../../utils/geolocation';
 
 const Home = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { location, detecting, autoDetectLocation, resetToRanchi } = useLocationState();
   
-  const [currentLocation, setCurrentLocation] = useState(
-    localStorage.getItem('user_location_full') || 'Ranchi, Jharkhand'
-  );
-  const [currentCity, setCurrentCity] = useState(
-    localStorage.getItem('user_location_city') || 'Ranchi'
-  );
-  const [detectingLocation, setDetectingLocation] = useState(false);
   const [recentBookings, setRecentBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
 
@@ -47,35 +41,7 @@ const Home = () => {
       .finally(() => setLoadingBookings(false));
   }, []);
 
-  const handleAutoLocate = async () => {
-    setDetectingLocation(true);
-    try {
-      const coords = await getCurrentGpsCoordinates();
-      const geo = await reverseGeocodeCoordinates(coords.lat, coords.lng);
-      const city = geo.locality || 'Raipur';
-      const full = `${city}, ${geo.state || 'Chhattisgarh'}`;
-      setCurrentLocation(full);
-      setCurrentCity(city);
-      localStorage.setItem('user_location_full', full);
-      localStorage.setItem('user_location_city', city);
-      localStorage.setItem('user_lat', coords.lat);
-      localStorage.setItem('user_lng', coords.lng);
-    } catch (err) {
-      console.warn('Auto locate error:', err);
-    } finally {
-      setDetectingLocation(false);
-    }
-  };
-
-  const handleResetToRanchi = () => {
-    setCurrentLocation('Ranchi, Jharkhand');
-    setCurrentCity('Ranchi');
-    localStorage.setItem('user_location_full', 'Ranchi, Jharkhand');
-    localStorage.setItem('user_location_city', 'Ranchi');
-  };
-
   const userName = user?.name || 'Customer';
-  const isOutsideRanchi = !currentLocation.toLowerCase().includes('ranchi');
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
@@ -88,25 +54,25 @@ const Home = () => {
 
         <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl">
           <span className="text-sm">📍</span>
-          <span className="text-xs font-bold text-blue-900">{currentLocation}</span>
+          <span className="text-xs font-bold text-blue-900">{location.name}</span>
           <button
-            onClick={handleAutoLocate}
-            disabled={detectingLocation}
+            onClick={() => autoDetectLocation()}
+            disabled={detecting}
             className="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-white px-2 py-0.5 rounded shadow-xs border border-blue-200"
           >
-            {detectingLocation ? 'Locating...' : '🎯 Auto-Pick'}
+            {detecting ? 'Locating...' : '🎯 Auto-Pick'}
           </button>
         </div>
       </div>
 
-      {/* Out of Service Region Notice Banner if auto-picked location is outside active pilot district */}
-      {isOutsideRanchi && (
+      {/* Out of Service Region Notice Banner */}
+      {location.isOutsideRanchi && (
         <div className="mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
           <div className="flex items-start space-x-3">
             <span className="text-2xl">⚠️</span>
             <div>
               <p className="text-xs font-bold text-amber-900 uppercase tracking-wider">
-                Limited Cooperative Coverage in {currentLocation}
+                Limited Cooperative Coverage in {location.name}
               </p>
               <p className="text-xs text-amber-800 mt-0.5">
                 Our Labour Cooperative Societies are actively serving <strong>Ranchi, Jharkhand</strong> pilot district. Raipur societies are currently onboarding.
@@ -114,7 +80,7 @@ const Home = () => {
             </div>
           </div>
           <button
-            onClick={handleResetToRanchi}
+            onClick={resetToRanchi}
             className="text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xs"
           >
             Switch to Ranchi (Active Hub)

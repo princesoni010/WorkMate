@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { LocationProvider } from './context/LocationContext';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Loader from './components/common/Loader';
 import Navbar from './components/layout/Navbar';
@@ -53,44 +54,46 @@ const AdminLayout = ({ children }) => (
 function App() {
   return (
     <LanguageProvider>
-      <AuthProvider>
-        <Suspense fallback={<div className="h-screen flex items-center justify-center"><Loader size="lg" text="Loading WorkMate..." /></div>}>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<AppLayout><LandingPage /></AppLayout>} />
-            <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
-            <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
+      <LocationProvider>
+        <AuthProvider>
+          <Suspense fallback={<div className="h-screen flex items-center justify-center"><Loader size="lg" text="Loading WorkMate..." /></div>}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<AppLayout><LandingPage /></AppLayout>} />
+              <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
+              <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
 
-            {/* Customer Routes */}
-            <Route path="/customer/home" element={<ProtectedRoute roles={['customer']}><AppLayout><CustomerHome /></AppLayout></ProtectedRoute>} />
-            <Route path="/customer/search" element={<ProtectedRoute roles={['customer']}><AppLayout><CustomerSearch /></AppLayout></ProtectedRoute>} />
-            <Route path="/customer/worker/:id" element={<ProtectedRoute roles={['customer']}><AppLayout><WorkerProfile /></AppLayout></ProtectedRoute>} />
-            <Route path="/customer/book" element={<ProtectedRoute roles={['customer']}><AppLayout><BookingForm /></AppLayout></ProtectedRoute>} />
-            <Route path="/customer/book/:workerId" element={<ProtectedRoute roles={['customer']}><AppLayout><BookingForm /></AppLayout></ProtectedRoute>} />
-            <Route path="/customer/bookings" element={<ProtectedRoute roles={['customer']}><AppLayout><MyBookings /></AppLayout></ProtectedRoute>} />
-            <Route path="/customer/payment/:bookingId" element={<ProtectedRoute roles={['customer']}><AppLayout><PaymentPage /></AppLayout></ProtectedRoute>} />
-            <Route path="/customer/profile" element={<ProtectedRoute roles={['customer']}><AppLayout><CustomerProfile /></AppLayout></ProtectedRoute>} />
+              {/* Customer Routes */}
+              <Route path="/customer/home" element={<ProtectedRoute roles={['customer']}><AppLayout><CustomerHome /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/search" element={<ProtectedRoute roles={['customer']}><AppLayout><CustomerSearch /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/worker/:id" element={<ProtectedRoute roles={['customer']}><AppLayout><WorkerProfile /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/book" element={<ProtectedRoute roles={['customer']}><AppLayout><BookingForm /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/book/:workerId" element={<ProtectedRoute roles={['customer']}><AppLayout><BookingForm /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/bookings" element={<ProtectedRoute roles={['customer']}><AppLayout><MyBookings /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/payment/:bookingId" element={<ProtectedRoute roles={['customer']}><AppLayout><PaymentPage /></AppLayout></ProtectedRoute>} />
+              <Route path="/customer/profile" element={<ProtectedRoute roles={['customer']}><AppLayout><CustomerProfile /></AppLayout></ProtectedRoute>} />
 
-            {/* Worker Routes */}
-            <Route path="/worker/register" element={<ProtectedRoute roles={['worker']}><AppLayout><WorkerRegister /></AppLayout></ProtectedRoute>} />
-            <Route path="/worker/home" element={<ProtectedRoute roles={['worker']}><AppLayout><WorkerHome /></AppLayout></ProtectedRoute>} />
-            <Route path="/worker/jobs" element={<ProtectedRoute roles={['worker']}><AppLayout><Jobs /></AppLayout></ProtectedRoute>} />
-            <Route path="/worker/earnings" element={<ProtectedRoute roles={['worker']}><AppLayout><Earnings /></AppLayout></ProtectedRoute>} />
-            <Route path="/worker/profile" element={<ProtectedRoute roles={['worker']}><AppLayout><WorkerProfileView /></AppLayout></ProtectedRoute>} />
+              {/* Worker Routes */}
+              <Route path="/worker/register" element={<ProtectedRoute roles={['worker']}><AppLayout><WorkerRegister /></AppLayout></ProtectedRoute>} />
+              <Route path="/worker/home" element={<ProtectedRoute roles={['worker']}><AppLayout><WorkerHome /></AppLayout></ProtectedRoute>} />
+              <Route path="/worker/jobs" element={<ProtectedRoute roles={['worker']}><AppLayout><Jobs /></AppLayout></ProtectedRoute>} />
+              <Route path="/worker/earnings" element={<ProtectedRoute roles={['worker']}><AppLayout><Earnings /></AppLayout></ProtectedRoute>} />
+              <Route path="/worker/profile" element={<ProtectedRoute roles={['worker']}><AppLayout><WorkerProfileView /></AppLayout></ProtectedRoute>} />
 
-            {/* Admin Routes */}
-            <Route path="/admin/dashboard" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/verify-workers" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><VerifyWorkers /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/bookings" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><AdminBookings /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/welfare" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><WelfareLedger /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/grievances" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><Grievances /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/forecast" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><Forecast /></AdminLayout></ProtectedRoute>} />
+              {/* Admin Routes */}
+              <Route path="/admin/dashboard" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/verify-workers" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><VerifyWorkers /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/bookings" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><AdminBookings /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/welfare" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><WelfareLedger /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/grievances" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><Grievances /></AdminLayout></ProtectedRoute>} />
+              <Route path="/admin/forecast" element={<ProtectedRoute roles={['society_admin', 'federation_admin']}><AdminLayout><Forecast /></AdminLayout></ProtectedRoute>} />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-      </AuthProvider>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+        </AuthProvider>
+      </LocationProvider>
     </LanguageProvider>
   );
 }
