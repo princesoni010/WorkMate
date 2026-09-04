@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../../components/layout';
 import { Card, Button, Input } from '../../components/common';
 
+const COOPERATIVE_SOCIETIES = [
+  { id: 'ranchi_elec', name: 'Ranchi Shramik Sahakari Samiti', rcsNo: 'RCS/JHR/2023/LCS-402', district: 'Ranchi' },
+  { id: 'jharkhand_plumbers', name: 'Jharkhand Plumbers & Tech Union', rcsNo: 'RCS/JHR/2021/LCS-119', district: 'Ranchi' },
+  { id: 'mahila_samiti', name: 'Mahila Shramik Swavalambi Samiti', rcsNo: 'RCS/JHR/2022/WCS-108', district: 'Ranchi' },
+  { id: 'nirman_union', name: 'Jharkhand Nirman Shramik Union', rcsNo: 'RCS/JHR/2024/LCS-891', district: 'Khunti' }
+];
+
 const WorkerRegister = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -10,13 +17,16 @@ const WorkerRegister = () => {
   const progress = Math.round((step / totalSteps) * 100);
 
   const [formData, setFormData] = useState({
-    name: 'Worker User', // pre-filled
-    phone: '',
-    cooperative: '',
-    skills: [],
-    district: '',
-    address: '',
-    radius: 10,
+    name: 'Ramesh Kumar',
+    phone: '9876543211',
+    cooperative: 'ranchi_elec',
+    memberId: 'MEM-88219',
+    rcsRegNo: 'RCS/JHR/2023/LCS-402',
+    skills: ['Electrician'],
+    experience: 5,
+    district: 'Ranchi',
+    address: 'Harmu Housing Colony, Ranchi',
+    radius: 12,
     availableNow: true
   });
 
@@ -28,131 +38,260 @@ const WorkerRegister = () => {
     if (step < totalSteps) {
       nextStep();
     } else {
-      alert('Profile submitted for verification!');
+      alert(`✓ Application submitted for statutory verification under ${formData.rcsRegNo}! Cooperative Admin will verify with Registrar records.`);
       navigate('/worker/home');
     }
   };
+
+  const selectedCoop = COOPERATIVE_SOCIETIES.find(c => c.id === formData.cooperative) || COOPERATIVE_SOCIETIES[0];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navbar />
       
       <main className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4 text-center">Setup Your Profile</h1>
+        <div className="text-center mb-6">
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+            Ministry of Cooperation • Statutory Onboarding
+          </span>
+          <h1 className="text-2xl font-bold text-gray-900 mt-2">Labour Cooperative Member Registration</h1>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Join verified State Government registered Labour Cooperative Societies under RCS Act.
+          </p>
+        </div>
         
         <div className="mb-8">
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="bg-[#FF9933] h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
           </div>
-          <p className="text-right text-xs text-gray-500 mt-1">{progress}% complete</p>
+          <p className="text-right text-xs font-bold text-orange-600 mt-1">Step {step} of {totalSteps} ({progress}%)</p>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-6 md:p-8 shadow-md border border-gray-200 bg-white">
           <form onSubmit={handleSubmit} className="space-y-6">
             
+            {/* Step 1: Personal Details */}
             {step === 1 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 border-b pb-2">1. Personal Details</h2>
-                <div className="flex justify-center mb-6">
-                  <div className="w-24 h-24 bg-gray-100 rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200">
+                <h2 className="text-lg font-bold text-gray-800 border-b pb-2">1. Personal & Identity Details</h2>
+                <div className="flex justify-center mb-4">
+                  <div className="w-20 h-20 bg-blue-50 rounded-2xl border-2 border-dashed border-blue-300 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-100">
                     <span className="text-2xl">📷</span>
-                    <span className="text-xs text-gray-500 mt-1">Upload Photo</span>
+                    <span className="text-[10px] font-bold text-blue-800 mt-1">Profile Photo</span>
                   </div>
                 </div>
-                <Input label="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                <Input label="Phone Number" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                <Input label="Full Name (as per Aadhaar / e-Shram)" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                <Input label="Active Mobile Number (for gig dispatch alerts)" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
               </div>
             )}
 
+            {/* Step 2: Labour Cooperative Society Affiliation & RCS Registration */}
             {step === 2 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 border-b pb-2">2. Cooperative Affiliation</h2>
+                <h2 className="text-lg font-bold text-gray-800 border-b pb-2">2. Labour Cooperative Society Affiliation</h2>
+                
                 <div>
-                  <label className="block text-sm font-medium mb-1">Select Cooperative Society</label>
-                  <select className="w-full p-3 border rounded-lg" value={formData.cooperative} onChange={e => setFormData({...formData, cooperative: e.target.value})}>
-                    <option value="">-- Select --</option>
-                    <option value="ranchi_elec">Ranchi Electricians Coop</option>
-                    <option value="jharkhand_plumbers">Jharkhand Plumbers Union</option>
-                    <option value="mahila_samiti">Mahila Shramik Samiti</option>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                    Select Registered Labour Cooperative Society
+                  </label>
+                  <select 
+                    className="input-field" 
+                    value={formData.cooperative} 
+                    onChange={e => {
+                      const found = COOPERATIVE_SOCIETIES.find(c => c.id === e.target.value);
+                      setFormData({
+                        ...formData, 
+                        cooperative: e.target.value,
+                        rcsRegNo: found ? found.rcsNo : ''
+                      });
+                    }}
+                  >
+                    {COOPERATIVE_SOCIETIES.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} — ({c.rcsNo})
+                      </option>
+                    ))}
                   </select>
                 </div>
-                <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-                  Joining a cooperative provides welfare benefits and collective bargaining power.
-                </p>
+
+                <div className="p-3.5 bg-purple-50 border border-purple-200 rounded-xl space-y-1 text-xs">
+                  <div className="flex justify-between font-bold text-purple-900">
+                    <span>🏛️ State RCS Registration Number:</span>
+                    <span className="font-mono">{selectedCoop.rcsNo}</span>
+                  </div>
+                  <p className="text-[11px] text-purple-800">
+                    Registered under State Cooperative Societies Act (Registrar of Cooperative Societies, State Govt).
+                  </p>
+                </div>
+
+                <Input 
+                  label="Primary Cooperative Membership Passbook / Card No." 
+                  placeholder="e.g., MEM-88219" 
+                  value={formData.memberId} 
+                  onChange={e => setFormData({...formData, memberId: e.target.value})} 
+                  required 
+                />
               </div>
             )}
 
+            {/* Step 3: Trade & Skill */}
             {step === 3 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 border-b pb-2">3. Skills & Experience</h2>
-                <p className="text-sm text-gray-600">Select your skills (multi-select demo)</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {['Electrician', 'Plumber', 'Carpenter', 'Painter', 'Mason'].map(skill => (
-                    <span key={skill} className="px-3 py-1 border rounded-full text-sm cursor-pointer hover:bg-blue-50">
-                      {skill}
-                    </span>
+                <h2 className="text-lg font-bold text-gray-800 border-b pb-2">3. Trade Skill & Experience</h2>
+                <p className="text-xs text-gray-600">Select your certified primary trade:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Electrician', 'Plumber', 'Carpenter', 'Painter', 'Mason', 'Domestic Helper'].map(skill => (
+                    <button
+                      type="button"
+                      key={skill}
+                      onClick={() => setFormData({...formData, skills: [skill]})}
+                      className={`p-3 rounded-xl border text-xs font-bold transition flex items-center justify-between ${
+                        formData.skills.includes(skill)
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                          : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                      }`}
+                    >
+                      <span>{skill}</span>
+                      {formData.skills.includes(skill) && <span>✓</span>}
+                    </button>
                   ))}
                 </div>
-                <Input label="Years of Experience" type="number" />
+                <Input 
+                  label="Years of Practical Trade Experience" 
+                  type="number" 
+                  value={formData.experience} 
+                  onChange={e => setFormData({...formData, experience: e.target.value})} 
+                  required 
+                />
               </div>
             )}
 
+            {/* Step 4: Service Area */}
             {step === 4 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 border-b pb-2">4. Service Area</h2>
-                <Input label="District" value={formData.district} onChange={e => setFormData({...formData, district: e.target.value})} />
-                <Input label="Base Address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                <h2 className="text-lg font-bold text-gray-800 border-b pb-2">4. Service Area & Mobility</h2>
+                <Input label="District" value={formData.district} onChange={e => setFormData({...formData, district: e.target.value})} required />
+                <Input label="Base Address / Locality" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} required />
                 <div>
-                  <label className="block text-sm font-medium mb-1">Service Radius: {formData.radius} km</label>
-                  <input type="range" min="1" max="25" value={formData.radius} onChange={e => setFormData({...formData, radius: e.target.value})} className="w-full accent-blue-600" />
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Service Dispatch Radius: {formData.radius} km</label>
+                  <input 
+                    type="range" 
+                    min="2" 
+                    max="25" 
+                    value={formData.radius} 
+                    onChange={e => setFormData({...formData, radius: e.target.value})} 
+                    className="w-full accent-[#FF9933]" 
+                  />
+                  <div className="flex justify-between text-[10px] text-gray-400">
+                    <span>2 km (Local Ward)</span>
+                    <span>12 km (Standard City Radius)</span>
+                    <span>25 km (District Max)</span>
+                  </div>
                 </div>
-                <div className="h-32 bg-gray-200 flex items-center justify-center border text-sm text-gray-500">[Map Preview]</div>
               </div>
             )}
 
+            {/* Step 5: Availability */}
             {step === 5 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 border-b pb-2">5. Availability</h2>
-                <label className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <input type="checkbox" checked={formData.availableNow} onChange={e => setFormData({...formData, availableNow: e.target.checked})} className="w-5 h-5 accent-green-600" />
-                  <span className="font-semibold text-green-800">Available Now</span>
+                <h2 className="text-lg font-bold text-gray-800 border-b pb-2">5. On-Call Availability</h2>
+                <label className="flex items-center gap-3 p-3.5 bg-green-50 border border-green-200 rounded-xl cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.availableNow} 
+                    onChange={e => setFormData({...formData, availableNow: e.target.checked})} 
+                    className="w-5 h-5 accent-green-600 rounded" 
+                  />
+                  <div>
+                    <span className="font-bold text-green-900 block text-xs">Ready for On-Call Gig Dispatch (Online)</span>
+                    <span className="text-[11px] text-green-700">You will receive live booking notifications within your {formData.radius} km service radius.</span>
+                  </div>
                 </label>
-                <p className="text-sm mt-4">Weekly Schedule (Demo Grid)</p>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs">
-                  {['M','T','W','T','F','S','S'].map((d,i) => <div key={i} className="font-bold">{d}</div>)}
-                  {Array(7).fill(0).map((_,i) => <div key={`m${i}`} className="bg-blue-100 p-1 rounded">AM</div>)}
-                  {Array(7).fill(0).map((_,i) => <div key={`p${i}`} className="bg-blue-100 p-1 rounded">PM</div>)}
-                </div>
               </div>
             )}
 
+            {/* Step 6: Statutory Document Verification */}
             {step === 6 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 border-b pb-2">6. Documents Verification</h2>
+                <h2 className="text-lg font-bold text-gray-800 border-b pb-2">6. Statutory Document Uploads</h2>
                 
-                <div className="border border-dashed border-gray-300 p-4 rounded-lg text-center bg-gray-50">
-                  <p className="font-semibold">e-Shram ID / Aadhaar</p>
-                  <p className="text-xs text-orange-500 mb-2">(Demo - no real data)</p>
-                  <Button type="button" variant="outline" size="small">Upload Document</Button>
-                </div>
-                
-                <div className="border border-dashed border-gray-300 p-4 rounded-lg text-center bg-gray-50">
-                  <p className="font-semibold">Skill Certificate</p>
-                  <Button type="button" variant="outline" size="small" className="mt-2">Upload Document</Button>
+                {/* 1. RCS Society Registration Certificate */}
+                <div className="border border-dashed border-purple-300 p-3.5 rounded-xl bg-purple-50/50 flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="text-xl">📜</span>
+                    <div>
+                      <p className="font-bold text-xs text-purple-950">Registration Certificate from Registrar of Cooperative Societies (RCS)</p>
+                      <p className="text-[10px] text-purple-700">State Govt Authority • Reg: {formData.rcsRegNo}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs bg-purple-200 text-purple-900 font-bold px-2.5 py-1 rounded-lg">
+                    ✓ Pre-Verified
+                  </span>
                 </div>
 
-                <div className="bg-yellow-50 text-yellow-800 p-3 rounded text-sm mt-4">
-                  Note: Your profile will be reviewed by the cooperative admin before you can accept jobs.
+                {/* 2. Primary Cooperative Membership Passbook */}
+                <div className="border border-dashed border-gray-300 p-3.5 rounded-xl bg-gray-50 flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="text-xl">📖</span>
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">Cooperative Membership Passbook / Share Certificate</p>
+                      <p className="text-[10px] text-gray-500">Member ID: {formData.memberId}</p>
+                    </div>
+                  </div>
+                  <button type="button" className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1 rounded-lg">
+                    Upload
+                  </button>
+                </div>
+
+                {/* 3. e-Shram Card */}
+                <div className="border border-dashed border-gray-300 p-3.5 rounded-xl bg-gray-50 flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="text-xl">🪪</span>
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">e-Shram National Worker Card (UAN) / Aadhaar</p>
+                      <p className="text-[10px] text-gray-500">Ministry of Labour & Employment</p>
+                    </div>
+                  </div>
+                  <button type="button" className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1 rounded-lg">
+                    Upload
+                  </button>
+                </div>
+
+                {/* 4. ITI Certificate */}
+                <div className="border border-dashed border-gray-300 p-3.5 rounded-xl bg-gray-50 flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="text-xl">🎓</span>
+                    <div>
+                      <p className="font-bold text-xs text-gray-900">ITI / NCVT Trade Skill Certificate (Optional for Helper)</p>
+                      <p className="text-[10px] text-gray-500">Trade: {formData.skills[0] || 'Electrician'}</p>
+                    </div>
+                  </div>
+                  <button type="button" className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1 rounded-lg">
+                    Upload
+                  </button>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-900 p-3 rounded-xl text-[11px] leading-relaxed">
+                  <strong>Statutory Notice:</strong> All submissions are cross-verified by the Cooperative Society Admin against the State Registrar of Cooperative Societies gazette roll before workers can receive live work orders.
                 </div>
               </div>
             )}
 
-            <div className="flex gap-4 pt-4 mt-6 border-t">
+            {/* Form Action Controls */}
+            <div className="flex gap-3 pt-4 border-t border-gray-200">
               {step > 1 && (
-                <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>Back</Button>
+                <Button type="button" variant="outline" className="flex-1 py-3 text-xs" onClick={prevStep}>
+                  Back
+                </Button>
               )}
-              <Button type="submit" variant="primary" className={`flex-1 ${step === totalSteps ? 'bg-green-600' : 'bg-blue-900'} text-white`}>
-                {step === totalSteps ? 'Submit for Verification' : 'Next'}
+              <Button 
+                type="submit" 
+                variant="primary" 
+                className={`flex-1 py-3 text-xs font-bold text-white ${
+                  step === totalSteps ? 'bg-green-600 hover:bg-green-700' : 'bg-[#FF9933] hover:bg-orange-600'
+                }`}
+              >
+                {step === totalSteps ? 'Submit for Statutory Verification' : 'Continue to Next Step'}
               </Button>
             </div>
           </form>
