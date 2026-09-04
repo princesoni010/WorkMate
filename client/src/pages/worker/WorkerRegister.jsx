@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../../components/layout';
 import { Card, Button, Input } from '../../components/common';
@@ -12,9 +12,19 @@ const COOPERATIVE_SOCIETIES = [
 
 const WorkerRegister = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const docInputRef = useRef(null);
+
   const [step, setStep] = useState(1);
   const totalSteps = 6;
   const progress = Math.round((step / totalSteps) * 100);
+
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [uploadedDocs, setUploadedDocs] = useState({
+    passbook: false,
+    eShram: false,
+    skillCert: false
+  });
 
   const [formData, setFormData] = useState({
     name: 'Ramesh Kumar',
@@ -32,6 +42,27 @@ const WorkerRegister = () => {
 
   const nextStep = () => setStep(Math.min(step + 1, totalSteps));
   const prevStep = () => setStep(Math.max(step - 1, 1));
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPhotoPreview(url);
+    }
+  };
+
+  const handleDocUpload = (docKey) => {
+    // Open native file picker
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,.pdf';
+    input.onchange = (e) => {
+      if (e.target.files?.[0]) {
+        setUploadedDocs(prev => ({ ...prev, [docKey]: e.target.files[0].name }));
+      }
+    };
+    input.click();
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -70,16 +101,43 @@ const WorkerRegister = () => {
         <Card className="p-6 md:p-8 shadow-md border border-gray-200 bg-white">
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Step 1: Personal Details */}
+            {/* Step 1: Personal Details & Photo Upload */}
             {step === 1 && (
               <div className="space-y-4">
                 <h2 className="text-lg font-bold text-gray-800 border-b pb-2">1. Personal & Identity Details</h2>
-                <div className="flex justify-center mb-4">
-                  <div className="w-20 h-20 bg-blue-50 rounded-2xl border-2 border-dashed border-blue-300 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-100">
-                    <span className="text-2xl">📷</span>
-                    <span className="text-[10px] font-bold text-blue-800 mt-1">Profile Photo</span>
+                
+                {/* Hidden File Input for Gallery / Camera */}
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  accept="image/*" 
+                  onChange={handlePhotoUpload} 
+                  className="hidden" 
+                />
+
+                <div className="flex flex-col items-center justify-center mb-4">
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-24 h-24 rounded-2xl border-2 border-dashed border-blue-400 bg-blue-50/70 hover:bg-blue-100 flex flex-col items-center justify-center cursor-pointer transition overflow-hidden group relative shadow-xs"
+                    title="Click to select photo from gallery or camera"
+                  >
+                    {photoPreview ? (
+                      <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <>
+                        <span className="text-3xl group-hover:scale-110 transition-transform">📸</span>
+                        <span className="text-[11px] font-bold text-blue-800 mt-1">Add Photo</span>
+                      </>
+                    )}
+                    <div className="absolute inset-0 bg-black/40 text-white text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                      Change Photo
+                    </div>
                   </div>
+                  <span className="text-[11px] text-gray-400 mt-1.5 cursor-pointer text-blue-600 hover:underline" onClick={() => fileInputRef.current?.click()}>
+                    Click to open Camera / Gallery
+                  </span>
                 </div>
+
                 <Input label="Full Name (as per Aadhaar / e-Shram)" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
                 <Input label="Active Mobile Number (for gig dispatch alerts)" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} required />
               </div>
@@ -235,11 +293,17 @@ const WorkerRegister = () => {
                     <span className="text-xl">📖</span>
                     <div>
                       <p className="font-bold text-xs text-gray-900">Cooperative Membership Passbook / Share Certificate</p>
-                      <p className="text-[10px] text-gray-500">Member ID: {formData.memberId}</p>
+                      <p className="text-[10px] text-gray-500">
+                        {uploadedDocs.passbook ? `✓ ${uploadedDocs.passbook}` : `Member ID: ${formData.memberId}`}
+                      </p>
                     </div>
                   </div>
-                  <button type="button" className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1 rounded-lg">
-                    Upload
+                  <button 
+                    type="button" 
+                    onClick={() => handleDocUpload('passbook')}
+                    className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1.5 rounded-lg shadow-xs"
+                  >
+                    {uploadedDocs.passbook ? 'Change File' : 'Upload from Gallery'}
                   </button>
                 </div>
 
@@ -249,11 +313,17 @@ const WorkerRegister = () => {
                     <span className="text-xl">🪪</span>
                     <div>
                       <p className="font-bold text-xs text-gray-900">e-Shram National Worker Card (UAN) / Aadhaar</p>
-                      <p className="text-[10px] text-gray-500">Ministry of Labour & Employment</p>
+                      <p className="text-[10px] text-gray-500">
+                        {uploadedDocs.eShram ? `✓ ${uploadedDocs.eShram}` : 'Ministry of Labour & Employment'}
+                      </p>
                     </div>
                   </div>
-                  <button type="button" className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1 rounded-lg">
-                    Upload
+                  <button 
+                    type="button" 
+                    onClick={() => handleDocUpload('eShram')}
+                    className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1.5 rounded-lg shadow-xs"
+                  >
+                    {uploadedDocs.eShram ? 'Change File' : 'Upload from Gallery'}
                   </button>
                 </div>
 
@@ -262,12 +332,18 @@ const WorkerRegister = () => {
                   <div className="flex items-center space-x-2.5">
                     <span className="text-xl">🎓</span>
                     <div>
-                      <p className="font-bold text-xs text-gray-900">ITI / NCVT Trade Skill Certificate (Optional for Helper)</p>
-                      <p className="text-[10px] text-gray-500">Trade: {formData.skills[0] || 'Electrician'}</p>
+                      <p className="font-bold text-xs text-gray-900">ITI / NCVT Trade Skill Certificate</p>
+                      <p className="text-[10px] text-gray-500">
+                        {uploadedDocs.skillCert ? `✓ ${uploadedDocs.skillCert}` : `Trade: ${formData.skills[0] || 'Electrician'}`}
+                      </p>
                     </div>
                   </div>
-                  <button type="button" className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1 rounded-lg">
-                    Upload
+                  <button 
+                    type="button" 
+                    onClick={() => handleDocUpload('skillCert')}
+                    className="text-xs bg-white border border-gray-300 hover:bg-gray-100 font-bold px-3 py-1.5 rounded-lg shadow-xs"
+                  >
+                    {uploadedDocs.skillCert ? 'Change File' : 'Upload from Gallery'}
                   </button>
                 </div>
 

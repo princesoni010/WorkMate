@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button } from '../../components/common';
 import useAuth from '../../hooks/useAuth';
@@ -8,10 +8,24 @@ const WorkerProfileView = () => {
   const { user, logout } = useAuth();
   const { isHindi, changeLanguage } = useContext(LanguageContext) || {};
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  const [profilePhoto, setProfilePhoto] = useState(
+    localStorage.getItem('worker_avatar') || null
+  );
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setProfilePhoto(url);
+      localStorage.setItem('worker_avatar', url);
+    }
   };
 
   const workerName = user?.name || 'Ramesh Kumar';
@@ -20,12 +34,34 @@ const WorkerProfileView = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
+      {/* Hidden File Input for Native Camera / Gallery Picker */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        accept="image/*" 
+        onChange={handlePhotoUpload} 
+        className="hidden" 
+      />
+
       {/* Profile Header */}
       <Card className="p-6 mb-6 shadow-sm border border-gray-200 bg-white">
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#138808] to-emerald-400 text-white font-black text-2xl flex items-center justify-center shadow-md">
-            {workerName[0]}
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#138808] to-emerald-400 text-white font-black text-2xl flex items-center justify-center shadow-md cursor-pointer relative overflow-hidden group hover:ring-4 hover:ring-green-100 transition"
+            title="Click to change profile photo from gallery"
+          >
+            {profilePhoto ? (
+              <img src={profilePhoto} alt={workerName} className="w-full h-full object-cover" />
+            ) : (
+              <span>{workerName[0]}</span>
+            )}
+            <div className="absolute inset-0 bg-black/40 text-white text-[9px] font-bold flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition">
+              <span>📷</span>
+              <span>Edit</span>
+            </div>
           </div>
+
           <div className="flex-1">
             <h1 className="text-xl font-bold text-gray-900 flex items-center gap-1.5">
               {workerName}
@@ -41,6 +77,13 @@ const WorkerProfileView = () => {
               </span>
             </div>
           </div>
+
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="px-3 py-1.5 text-xs font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 hidden sm:block"
+          >
+            📷 Upload Photo
+          </button>
         </div>
       </Card>
 
@@ -57,75 +100,62 @@ const WorkerProfileView = () => {
             <span className="font-bold text-gray-800">Ranchi Shramik Sahakari Samiti</span>
           </div>
           <div className="flex justify-between py-2 border-b border-gray-100">
+            <span className="text-gray-500">RCS State Reg No</span>
+            <span className="font-mono font-bold text-purple-700">RCS/JHR/2023/LCS-402</span>
+          </div>
+          <div className="flex justify-between py-2 border-b border-gray-100">
+            <span className="text-gray-500">Cooperative Member Passbook</span>
+            <span className="font-mono font-semibold text-gray-800">MEM-88219</span>
+          </div>
+          <div className="flex justify-between py-2 border-b border-gray-100">
             <span className="text-gray-500">Parent Federation</span>
-            <span className="font-semibold text-gray-800">Jharkhand State Labour Cooperative Fed.</span>
+            <span className="font-semibold text-gray-800">Jharkhand State Labour Fed</span>
           </div>
           <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-500">Registered District</span>
-            <span className="font-semibold text-gray-800">Ranchi, Jharkhand</span>
+            <span className="text-gray-500">e-Shram National ID</span>
+            <span className="font-mono font-semibold text-gray-800">UAN 9840-2918-4421</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-500">Service Coverage Radius</span>
-            <span className="font-semibold text-blue-700">15 km (Ranchi & Outskirts)</span>
+          <div className="flex justify-between py-2">
+            <span className="text-gray-500">Assigned Service Radius</span>
+            <span className="font-bold text-blue-700">12 km (Ranchi District)</span>
           </div>
         </div>
       </Card>
 
-      {/* Verification & Compliance Badges */}
+      {/* Language & Preference */}
       <Card className="p-6 mb-6 shadow-sm border border-gray-200 bg-white">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4">Verified Documents & Badges</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4">Preferences</h2>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="p-3 bg-green-50 border border-green-200 rounded-xl flex items-center space-x-3">
-            <span className="text-2xl">🪪</span>
-            <div>
-              <p className="font-bold text-green-900 text-xs">e-Shram National Card</p>
-              <p className="text-[11px] text-green-700">Verified ID: 9842-XXXX-1029</p>
-            </div>
+        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+          <div>
+            <p className="text-sm font-semibold text-gray-800">App Language</p>
+            <p className="text-xs text-gray-400">Choose between Hindi and English</p>
           </div>
+          <button
+            onClick={() => changeLanguage && changeLanguage(isHindi ? 'en' : 'hi')}
+            className="px-3 py-1.5 text-xs font-bold bg-orange-50 text-[#FF9933] border border-orange-200 rounded-lg hover:bg-orange-100"
+          >
+            {isHindi ? 'हिन्दी (Active)' : 'English (Active)'}
+          </button>
+        </div>
 
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center space-x-3">
-            <span className="text-2xl">📜</span>
-            <div>
-              <p className="font-bold text-blue-900 text-xs">ITI Electrical Certificate</p>
-              <p className="text-[11px] text-blue-700">Govt. Certified Trade</p>
-            </div>
+        <div className="flex justify-between items-center py-2">
+          <div>
+            <p className="text-sm font-semibold text-gray-800">Welfare Ledger Balance</p>
+            <p className="text-xs text-gray-400">Your accumulated 2% collective social security credit</p>
           </div>
-
-          <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl flex items-center space-x-3">
-            <span className="text-2xl">🛡️</span>
-            <div>
-              <p className="font-bold text-purple-900 text-xs">Cooperative Welfare Pool</p>
-              <p className="text-[11px] text-purple-700">2% Automatic Contribution Active</p>
-            </div>
-          </div>
-
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center space-x-3">
-            <span className="text-2xl">⛑️</span>
-            <div>
-              <p className="font-bold text-amber-900 text-xs">Safety Kit Certified</p>
-              <p className="text-[11px] text-amber-700">Insulated Gloves & Helmet Checked</p>
-            </div>
-          </div>
+          <span className="text-base font-black text-green-700">₹1,440.00</span>
         </div>
       </Card>
 
-      {/* Profile Actions */}
+      {/* Logout Action */}
       <div className="space-y-3">
         <Button
-          variant="primary"
-          onClick={() => navigate('/worker/register')}
-          className="w-full py-3 bg-[#138808] hover:bg-green-700 text-white font-bold text-sm"
-        >
-          Update Skills & Service Radius
-        </Button>
-
-        <Button
           variant="outline"
+          className="w-full py-3 text-red-600 border-red-200 hover:bg-red-50 font-bold text-sm"
           onClick={handleLogout}
-          className="w-full py-3 text-red-600 border-red-300 hover:bg-red-50 font-bold text-sm"
         >
-          Sign Out / Logout
+          Logout from WorkMate
         </Button>
       </div>
     </div>
